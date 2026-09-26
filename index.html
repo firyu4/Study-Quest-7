@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Quest 7</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #090b1a;
+    color: white;
+    min-height: 100vh;
+}
+
+.container {
+    width: 92%;
+    max-width: 850px;
+    margin: auto;
+    padding: 25px 0;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.logo {
+    font-size: 38px;
+    font-weight: bold;
+    color: #8b5cf6;
+    text-shadow: 0 0 15px #8b5cf6;
+}
+
+.subtitle {
+    color: #aaa;
+    margin-top: 8px;
+}
+
+.card {
+    background: #12162b;
+    border: 1px solid #292f55;
+    border-radius: 18px;
+    padding: 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 20px rgba(80, 70, 200, .15);
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #41476d;
+    background: #090b1a;
+    color: white;
+    font-size: 16px;
+    margin: 12px 0;
+}
+
+button {
+    border: none;
+    border-radius: 10px;
+    padding: 13px 18px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+    background: #7c3aed;
+    transition: .2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    background: #8b5cf6;
+}
+
+.levels {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.level {
+    padding: 18px 10px;
+    text-align: center;
+    border-radius: 14px;
+    background: #191e38;
+    border: 1px solid #30375e;
+    cursor: pointer;
+}
+
+.level.locked {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.level.active {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 15px rgba(139, 92, 246, .4);
+}
+
+.level-number {
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+.progress {
+    height: 10px;
+    background: #272c48;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 12px 0;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #7c3aed, #06b6d4);
+    transition: .3s;
+}
+
+.top-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.badge {
+    background: #1d2340;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+.question-number {
+    color: #a78bfa;
+    margin-bottom: 10px;
+}
+
+.question {
+    font-size: 21px;
+    line-height: 1.5;
+    margin-bottom: 18px;
+}
+
+.answers {
+    display: grid;
+    gap: 12px;
+}
+
+.answer {
+    width: 100%;
+    text-align: left;
+    background: #191e38;
+    border: 1px solid #363d67;
+}
+
+.answer:hover {
+    background: #252b4d;
+}
+
+.answer.correct {
+    background: #14532d;
+    border-color: #22c55e;
+}
+
+.answer.wrong {
+    background: #7f1d1d;
+    border-color: #ef4444;
+}
+
+.answer:disabled {
+    cursor: not-allowed;
+    transform: none;
+}
+
+.feedback {
+    margin-top: 16px;
+    font-weight: bold;
+    min-height: 25px;
+}
+
+.next-btn {
+    margin-top: 18px;
+    display: none;
+}
+
+.result {
+    text-align: center;
+}
+
+.score-big {
+    font-size: 60px;
+    font-weight: bold;
+    color: #a78bfa;
+    margin: 20px 0;
+    text-shadow: 0 0 20px #7c3aed;
+}
+
+.leaderboard-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 13px;
+    margin: 8px 0;
+    border-radius: 10px;
+    background: #191e38;
+}
+
+.rank {
+    font-weight: bold;
+    color: #facc15;
+}
+
+.hidden {
+    display: none;
+}
+
+.small {
+    color: #aaa;
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
+    .logo {
+        font-size: 30px;
+    }
+
+    .levels {
+        grid-template-columns: 1fr;
+    }
+
+    .question {
+        font-size: 18px;
+    }
+
+    .score-big {
+        font-size: 48px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+    <div class="logo">🎮 STUDY QUEST 7</div>
+    <div class="subtitle">Belajar • Jawab • Naik Level • Raih Skor</div>
+</header>
+
+<!-- HALAMAN AWAL -->
+<section id="home">
+
+    <div class="card">
+        <h2>👤 Masukkan Nama</h2>
+        <p class="small">Nama akan digunakan di leaderboard.</p>
+
+        <input
+            type="text"
+            id="playerName"
+            placeholder="Contoh: Shafira"
+            maxlength="20"
+        >
+
+        <button onclick="startGame()">🚀 Mulai Game</button>
+    </div>
+
+    <div class="card">
+        <h2>🔓 Level</h2>
+
+        <div class="levels">
+            <div class="level active">
+                <div class="level-number">1</div>
+                <div>🌱 Pemula</div>
+                <div class="small">Soal 1–10</div>
+            </div>
+
+            <div class="level locked">
+                <div class="level-number">2 🔒</div>
+                <div>⚡ Penjelajah</div>
+                <div class="small">Buka setelah 10 soal</div>
+            </div>
+
+            <div class="level locked">
+                <div class="level-number">3 🔒</div>
+                <div>👑 Master</div>
+                <div class="small">Buka setelah 20 soal</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>🏆 Leaderboard</h2>
+        <div id="leaderboard"></div>
+    </div>
+
+</section>
+
+<!-- HALAMAN GAME -->
+<section id="game" class="hidden">
+
+    <div class="card">
+
+        <div class="top-info">
+            <div class="badge">👤 <span id="nameDisplay"></span></div>
+            <div class="badge">⭐ Skor: <span id="score">0</span></div>
+            <div class="badge">⏱️ <span id="timer">30</span>s</div>
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="question-number" id="questionNumber"></div>
+
+        <div class="question" id="question"></div>
+
+        <div class="answers" id="answers"></div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <button class="next-btn" id="nextButton" onclick="nextQuestion()">
+            Lanjut ➜
+        </button>
+
+    </div>
+
+</section>
+
+<!-- HASIL -->
+<section id="result" class="hidden">
+
+    <div class="card result">
+
+        <h2>🎉 Game Selesai!</h2>
+
+        <div class="score-big">
+            <span id="finalScore">0</span>
+        </div>
+
+        <p id="resultText"></p>
+
+        <br>
+
+        <button onclick="backHome()">🏠 Kembali ke Menu</button>
+        <button onclick="playAgain()">🔄 Main Lagi</button>
+
+    </div>
+
+    <div class="card">
+        <h2>🏆 Leaderboard</h2>
+        <div id="finalLeaderboard"></div>
+    </div>
+
+</section>
+
+</div>
+
+<script>
+
+const questions = [
+
+/* 1 */
+{
+    question: "Hasil dari 3(2 − 5x) + 4(x − 1) adalah ...",
+    answers: [
+        "2 − 11x",
+        "2 − 19x",
+        "10 − 11x",
+        "2 + 11x"
+    ],
+    correct: 0
+},
+
+/* 2 */
+{
+    question: "Organ tubuh yang berfungsi memompa darah ke seluruh tubuh adalah ...",
+    answers: [
+        "Paru-paru",
+        "Jantung",
+        "Ginjal",
+        "Lambung"
+    ],
+    correct: 1
+},
+
+/* 3 */
+{
+    question: "Proses perubahan air menjadi uap air disebut ...",
+    answers: [
+        "Membeku",
+        "Mengembun",
+        "Menguap",
+        "Mencair"
+    ],
+    correct: 2
+},
+
+/* 4 */
+{
+    question: "Kegiatan menghasilkan barang atau jasa disebut ...",
+    answers: [
+        "Konsumsi",
+        "Produksi",
+        "Distribusi",
+        "Transportasi"
+    ],
+    correct: 1
+},
+
+/* 5 */
+{
+    question: "Gagasan utama yang menjadi dasar sebuah paragraf disebut ...",
+    answers: [
+        "Kalimat penjelas",
+        "Ide pokok",
+        "Kesimpulan",
+        "Judul"
+    ],
+    correct: 1
+},
+
+/* 6 */
+{
+    question: "Bilangan −13/4 − 7/2 = ...",
+    answers: [
+        "−27/4",
+        "−20/4",
+        "−19/4",
+        "27/4"
+    ],
+    correct: 0
+},
+
+/* 7 */
+{
+    question: "Salah satu contoh sumber energi terbarukan adalah ...",
+    answers: [
+        "Batu bara",
+        "Minyak bumi",
+        "Matahari",
+        "Gas alam"
+    ],
+    correct: 2
+},
+
+/* 8 */
+{
+    question: "Dalam computational thinking, memecah masalah besar menjadi bagian-bagian kecil disebut ...",
+    answers: [
+        "Algoritma",
+        "Dekomposisi",
+        "Abstraksi",
+        "Evaluasi"
+    ],
+    correct: 1
+},
+
+/* 9 */
+{
+    question: "Asmaul Husna Al-'Alim berarti Allah Maha ...",
+    answers: [
+        "Mengetahui",
+        "Mendengar",
+        "Melihat",
+        "Pengasih"
+    ],
+    correct: 0
+},
+
+/* 10 */
+{
+    question: "Perangkat komputer yang digunakan untuk memasukkan teks adalah ...",
+    answers: [
+        "Monitor",
+        "Printer",
+        "Keyboard",
+        "Speaker"
+    ],
+    correct: 2
+},
+
+/* LEVEL 2 */
+
+/* 11 */
+{
+    question: "Jika a = 4, maka nilai dari 2a − 5 adalah ...",
+    answers: [
+        "3",
+        "5",
+        "8",
+        "13"
+    ],
+    correct: 0
+},
+
+/* 12 */
+{
+    question: "Peristiwa perubahan siang dan malam terjadi karena ...",
+    answers: [
+        "Revolusi Bumi",
+        "Rotasi Bumi",
+        "Rotasi Bulan",
+        "Revolusi Matahari"
+    ],
+    correct: 1
+},
+
+/* 13 */
+{
+    question: "Zat makanan yang berfungsi sebagai sumber energi utama bagi tubuh adalah ...",
+    answers: [
+        "Karbohidrat",
+        "Vitamin",
+        "Mineral",
+        "Air"
+    ],
+    correct: 0
+},
+
+/* 14 */
+{
+    question: "Teks yang berisi langkah-langkah melakukan atau membuat sesuatu disebut teks ...",
+    answers: [
+        "Deskripsi",
+        "Narasi",
+        "Prosedur",
+        "Eksposisi"
+    ],
+    correct: 2
+},
+
+/* 15 */
+{
+    question: "Semboyan bangsa Indonesia adalah ...",
+    answers: [
+        "Tut Wuri Handayani",
+        "Bhinneka Tunggal Ika",
+        "Indonesia Raya",
+        "Garuda Pancasila"
+    ],
+    correct: 1
+},
+
+/* 16 */
+{
+    question: "Hasil dari 2,8 : (−1,12) adalah ...",
+    answers: [
+        "−2,5",
+        "2,5",
+        "−0,4",
+        "0,4"
+    ],
+    correct: 0
+},
+
+/* 17 */
+{
+    question: "Hewan yang mengalami metamorfosis sempurna adalah ...",
+    answers: [
+        "Belalang",
+        "Kecoa",
+        "Kupu-kupu",
+        "Jangkrik"
+    ],
+    correct: 2
+},
+
+/* 18 */
+{
+    question: "Distribusi dalam kegiatan ekonomi berarti kegiatan ...",
+    answers: [
+        "Menggunakan barang",
+        "Membuat barang",
+        "Menyalurkan barang",
+        "Menyimpan uang"
+    ],
+    correct: 2
+},
+
+/* 19 */
+{
+    question: "Kalimat yang digunakan untuk menanyakan sesuatu disebut kalimat ...",
+    answers: [
+        "Berita",
+        "Tanya",
+        "Perintah",
+        "Seruan"
+    ],
+    correct: 1
+},
+
+/* 20 */
+{
+    question: "Bahasa Inggris dari 'perpustakaan' adalah ...",
+    answers: [
+        "Laboratory",
+        "Classroom",
+        "Library",
+        "Canteen"
+    ],
+    correct: 2
+},
+
+/* LEVEL 3 */
+
+/* 21 */
+{
+    question: "Sebuah segitiga sama sisi memiliki sisi (2a − 5) cm. Jika a = 4, kelilingnya adalah ...",
+    answers: [
+        "9 cm",
+        "12 cm",
+        "15 cm",
+        "18 cm"
+    ],
+    correct: 2
+},
+
+/* 22 */
+{
+    question: "Peristiwa Proklamasi Kemerdekaan Indonesia terjadi pada ...",
+    answers: [
+        "20 Mei 1908",
+        "28 Oktober 1928",
+        "17 Agustus 1945",
+        "10 November 1945"
+    ],
+    correct: 2
+},
+
+/* 23 */
+{
+    question: "Sikap yang sesuai dengan sila ketiga Pancasila adalah ...",
+    answers: [
+        "Mengutamakan persatuan",
+        "Memaksakan pendapat",
+        "Tidak menghargai perbedaan",
+        "Mementingkan diri sendiri"
+    ],
+    correct: 0
+},
+
+/* 24 */
+{
+    question: "Hasil penyederhanaan 10a²b⁵c / 5a²b³c adalah ...",
+    answers: [
+        "2b²",
+        "2b³",
+        "5b²",
+        "2a²b²"
+    ],
+    correct: 0
+},
+
+/* 25 */
+{
+    question: "Jika semua jawaban dalam game ini benar, berapakah nilai maksimal yang diperoleh?",
+    answers: [
+        "75",
+        "80",
+        "90",
+        "100"
+    ],
+    correct: 3
+}
+
+];
+
+let currentQuestion = 0;
+let score = 0;
+let playerName = "";
+let timer;
+let timeLeft = 30;
+
+function startGame() {
+
+    const input = document.getElementById("playerName");
+    playerName = input.value.trim();
+
+    if (playerName === "") {
+        alert("Masukkan nama terlebih dahulu!");
+        return;
+    }
+
+    currentQuestion = 0;
+    score = 0;
+
+    document.getElementById("home").classList.add("hidden");
+    document.getElementById("result").classList.add("hidden");
+    document.getElementById("game").classList.remove("hidden");
+
+    document.getElementById("nameDisplay").textContent = playerName;
+    document.getElementById("score").textContent = score;
+
+    showQuestion();
+}
+
+function showQuestion() {
+
+    clearInterval(timer);
+
+    const q = questions[currentQuestion];
+
+    document.getElementById("questionNumber").textContent =
+        `SOAL ${currentQuestion + 1} / ${questions.length}`;
+
+    document.getElementById("question").textContent = q.question;
+
+    const answersContainer = document.getElementById("answers");
+    answersContainer.innerHTML = "";
+
+    document.getElementById("feedback").textContent = "";
+    document.getElementById("nextButton").style.display = "none";
+
+    q.answers.forEach((answer, index) => {
+
+        const button = document.createElement("button");
+
+        button.className = "answer";
+        button.textContent =
+            String.fromCharCode(65 + index) + ". " + answer;
+
+        button.onclick = () => checkAnswer(index, button);
+
+        answersContainer.appendChild(button);
+    });
+
+    const progress =
+        ((currentQuestion) / questions.length) * 100;
+
+    document.getElementById("progressBar").style.width =
+        progress + "%";
+
+    startTimer();
+}
+
+function startTimer() {
+
+    timeLeft = 30;
+    document.getElementById("timer").textContent = timeLeft;
+
+    timer = setInterval(() => {
+
+        timeLeft--;
+
+        document.getElementById("timer").textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+
+            clearInterval(timer);
+
+            autoWrong();
+        }
+
+    }, 1000);
+}
+
+function checkAnswer(index, selectedButton) {
+
+    clearInterval(timer);
+
+    const q = questions[currentQuestion];
+
+    const buttons =
+        document.querySelectorAll(".answer");
+
+    buttons.forEach(button => {
+        button.disabled = true;
+    });
+
+    if (index === q.correct) {
+
+        selectedButton.classList.add("correct");
+
+        score += 4;
+
+        document.getElementById("score").textContent = score;
+
+        document.getElementById("feedback").textContent =
+            "✅ Benar! +4 poin";
+
+    } else {
+
+        selectedButton.classList.add("wrong");
+
+        buttons[q.correct].classList.add("correct");
+
+        document.getElementById("feedback").textContent =
+            "❌ Salah! Jawaban yang benar adalah " +
+            q.answers[q.correct];
+    }
+
+    document.getElementById("nextButton").style.display = "inline-block";
+}
+
+function autoWrong() {
+
+    const q = questions[currentQuestion];
+
+    const buttons =
+        document.querySelectorAll(".answer");
+
+    buttons.forEach(button => {
+        button.disabled = true;
+    });
+
+    buttons[q.correct].classList.add("correct");
+
+    document.getElementById("feedback").textContent =
+        "⏰ Waktu habis!";
+
+    document.getElementById("nextButton").style.display =
+        "inline-block";
+}
+
+function nextQuestion() {
+
+    currentQuestion++;
+
+    if (currentQuestion >= questions.length) {
+        finishGame();
+    } else {
+
+        if (currentQuestion === 10) {
+            alert("🔓 LEVEL 2 TERBUKA!");
+        }
+
+        if (currentQuestion === 20) {
+            alert("👑 LEVEL 3 TERBUKA!");
+        }
+
+        showQuestion();
+    }
+}
+
+function finishGame() {
+
+    clearInterval(timer);
+
+    document.getElementById("game").classList.add("hidden");
+    document.getElementById("result").classList.remove("hidden");
+
+    document.getElementById("finalScore").textContent =
+        score;
+
+    let text = "";
+
+    if (score === 100) {
+        text = "👑 SEMPURNA! Semua jawaban benar!";
+    } else if (score >= 80) {
+        text = "🔥 Hebat! Nilaimu sangat tinggi!";
+    } else if (score >= 60) {
+        text = "⭐ Bagus! Terus tingkatkan lagi!";
+    } else if (score >= 40) {
+        text = "💪 Lumayan! Coba lagi untuk meningkatkan skor.";
+    } else {
+        text = "📚 Jangan menyerah! Belajar dan coba lagi.";
+    }
+
+    document.getElementById("resultText").textContent = text;
+
+    saveScore();
+    showLeaderboard("finalLeaderboard");
+}
+
+function saveScore() {
+
+    let leaderboard =
+        JSON.parse(localStorage.getItem("studyQuestLeaderboard")) || [];
+
+    leaderboard.push({
+        name: playerName,
+        score: score
+    });
+
+    leaderboard.sort((a, b) => b.score - a.score);
+
+    leaderboard = leaderboard.slice(0, 10);
+
+    localStorage.setItem(
+        "studyQuestLeaderboard",
+        JSON.stringify(leaderboard)
+    );
+}
+
+function showLeaderboard(elementId) {
+
+    let leaderboard =
+        JSON.parse(localStorage.getItem("studyQuestLeaderboard")) || [];
+
+    const element =
+        document.getElementById(elementId);
+
+    if (leaderboard.length === 0) {
+
+        element.innerHTML =
+            "<p class='small'>Belum ada pemain.</p>";
+
+        return;
+    }
+
+    element.innerHTML = "";
+
+    leaderboard.forEach((player, index) => {
+
+        const item =
+            document.createElement("div");
+
+        item.className = "leaderboard-item";
+
+        let medal = "";
+
+        if (index === 0) medal = "🥇";
+        else if (index === 1) medal = "🥈";
+        else if (index === 2) medal = "🥉";
+        else medal = "#" + (index + 1);
+
+        item.innerHTML = `
+            <span class="rank">${medal} ${player.name}</span>
+            <strong>${player.score}</strong>
+        `;
+
+        element.appendChild(item);
+    });
+}
+
+function backHome() {
+
+    document.getElementById("result").classList.add("hidden");
+    document.getElementById("home").classList.remove("hidden");
+
+    showLeaderboard("leaderboard");
+}
+
+function playAgain() {
+
+    document.getElementById("result").classList.add("hidden");
+    document.getElementById("game").classList.remove("hidden");
+
+    currentQuestion = 0;
+    score = 0;
+
+    document.getElementById("score").textContent = 0;
+
+    showQuestion();
+}
+
+showLeaderboard("leaderboard");
+
+</script>
+
+</body>
+</html>
